@@ -24,47 +24,48 @@ def img_ext(base_url):
             return None
 
 def setup():
+    img_options = {
+        '1': 'Ubuntu 24.04',
+        '2': 'Ubuntu 22.04'
+    }
     print('''What image would you like to select?
 [1] Ubuntu 24.04
 [2] Ubuntu 22.04''')
     img = input('Enter Number: ')
-    if img == '1':
+    selected_image = img_options.get(img)
+    if selected_image:
         os.system('clear')
-        url = img_ext(images['Ubuntu 24.04'])
+        url = img_ext(images[selected_image])
         filename = url.split('/')[-1]
         print('Downloading...')
         urllib.request.urlretrieve(url, filename)
         os.system('clear')
         print('Done!')
-        sleep(1)
-        configure(filename)
-    elif img == '2':
-        os.system('clear')
-        url = img_ext(images["Ubuntu 22.04"])
-        filename = url.split('/')[-1]
-        print('Downloading...')
-        urllib.request.urlretrieve(url, filename)
-        os.system('clear')
-        print('Done!')
-        sleep(1)
+        sleep(2)
         configure(filename)
     else:
-        print('unrecognized input')
+        os.system('clear')
+        print('unrecognized input...')
+        sleep(2)
+        os.system('clear')
+        setup()
 
 def configure(filename):
     os.system('clear')
-    print(f'Configuring {filename}...')
-    sleep(1)
+    print(f'Starting configuring on {filename}...')
+    sleep(2)
     os.system('clear')
     print('libguestfs-tools must be installed for some parts of the configuration. Do u want to install it?')
     libguestfs = input('(Y/N): ')
     if libguestfs.lower() in ['y', 'yes']:
         try:
+            os.system('clear')
             subprocess.run(['sudo', 'apt', 'install', 'libguestfs-tools', '-y'], check=True)
         except subprocess.CalledProcessError as err:
             print(f'unable to install libguestfs-tools: {err}')
     else:
         print('libguestfs-tools is a requirement. exiting script...')
+        return
     vmid = input('Enter Virtual Machine ID: ')
     try:
         subprocess.run(['qm', 'set', f'{vmid}', '--serial0', 'socket', '--vga', 'serial0'], check=True)
