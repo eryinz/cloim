@@ -5,6 +5,8 @@ installed on the image, timezone, password, ssh, etc.
 """
 import urllib.request
 import re
+import os
+from time import sleep
 
 images = {
     'Ubuntu 24.04': 'https://cloud-images.ubuntu.com/minimal/releases/noble/release/',
@@ -26,16 +28,41 @@ def setup():
 [2] Ubuntu 22.04''')
     img = input('Enter Number: ')
     if img == '1':
-        url = img_ext(images["Ubuntu 24.04"])
+        os.system('clear')
+        url = img_ext(images['Ubuntu 24.04'])
+        filename = url.split('/')[-1]
         print('Downloading...')
-        urllib.request.urlretrieve(url, 'ubuntu-24.04-cloudimg.img')
-        print('Finished!')
+        urllib.request.urlretrieve(url, filename)
+        os.system('clear')
+        print('Done!')
+        sleep(1)
+        configure(filename)
     elif img == '2':
+        os.system('clear')
         url = img_ext(images["Ubuntu 22.04"])
+        filename = url.split('/')[-1]
         print('Downloading...')
-        urllib.request.urlretrieve(url, 'ubuntu-22.04-cloudimg.img')
-        print('Finished!')
+        urllib.request.urlretrieve(url, filename)
+        os.system('clear')
+        print('Done!')
+        sleep(1)
+        configure(filename)
     else:
         print('unrecognized input')
 
-setup()
+def configure(filename):
+    os.system('clear')
+    print(f'Configuring {filename}...')
+    sleep(1)
+    os.system('clear')
+    print('libguestfs-tools must be installed for some parts of the configuration. Do u want to install it?')
+    libguestfs = input('(Y/N): ')
+    if libguestfs.lower() in ['y', 'yes']:
+        os.system('sudo apt install libguestfs-tools -y')
+    else:
+        print('quitting script :(')
+    vmid = input('Enter Virtual Machine ID: ')
+    os.system(f'qm set {vmid} --serial socket --vga serial0')
+
+if __name__ == '__main__':
+    setup()
