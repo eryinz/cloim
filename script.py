@@ -27,10 +27,14 @@ def setup():
     img = input('Enter Number: ')
     if img == '1':
         url = img_ext(images["Ubuntu 24.04"])
+        print('Downloading...')
         urllib.request.urlretrieve(url, 'ubuntu-24.04-cloudimg.img')
+        print('Finished!')
     elif img == '2':
         url = img_ext(images["Ubuntu 22.04"])
+        print('Downloading...')
         urllib.request.urlretrieve(url, 'ubuntu-22.04-cloudimg.img')
+        print('Finished!')
     else:
         print('unrecognized input')
 
