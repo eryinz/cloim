@@ -4,6 +4,7 @@ guides you through a setup wizard that allows you to configure things like what'
 installed on the image, timezone, password, ssh, etc.
 """
 import urllib.request
+import subprocess
 import re
 import os
 from time import sleep
@@ -58,11 +59,17 @@ def configure(filename):
     print('libguestfs-tools must be installed for some parts of the configuration. Do u want to install it?')
     libguestfs = input('(Y/N): ')
     if libguestfs.lower() in ['y', 'yes']:
-        os.system('sudo apt install libguestfs-tools -y')
+        try:
+            subprocess.run(['sudo', 'apt', 'install', 'libguestfs-tools', '-y'], check=True)
+        except subprocess.CalledProcessError as err:
+            print(f'unable to install libguestfs-tools: {err}')
     else:
-        print('quitting script :(')
+        print('libguestfs-tools is a requirement. exiting script...')
     vmid = input('Enter Virtual Machine ID: ')
-    os.system(f'qm set {vmid} --serial socket --vga serial0')
+    try:
+        subprocess.run(['qm', 'set', f'{vmid}', '--serial0', 'socket', '--vga', 'serial0'], check=True)
+    except subprocess.CalledProcessError as err:
+        print(f'Invalid Virtual Machine ID: {err}')
 
 if __name__ == '__main__':
     setup()
