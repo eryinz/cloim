@@ -75,7 +75,7 @@ def configure(filename):
         print('libguestfs-tools is a requirement. exiting script...')
         return
     try:
-        subprocess.run(['virt-customize', ['-a'], [new_filename], ['--run-command'], ['"sudo echo > /etc/machine id; sudo ln -sf /etc/machine-id /var/lib/dbus/machine-id"'])
+        subprocess.run(['virt-customize', '-a', new_filename, '--run-command', '"sudo echo > /etc/machine id; sudo ln -sf /etc/machine-id /var/lib/dbus/machine-id"'], check=True)
     except subprocess.CalledProcessError as err:
         print(f'An error occured with the machine ID: {err}')
         return
