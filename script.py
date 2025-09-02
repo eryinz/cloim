@@ -1,8 +1,3 @@
-"""
-idea: script that grabs popular cloud images, allows you to select one, and
-guides you through a setup wizard that allows you to configure things like what's
-installed on the image, timezone, password, ssh, etc.
-"""
 import urllib.request
 import subprocess
 import re
