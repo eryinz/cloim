@@ -50,13 +50,12 @@ def configure(filename):
     print(f'Starting configuration on {filename}...')
     sleep(3)
     os.system('clear')
-    name, ext = os.path.splitext(filename)
-    new_filename = name + '.qcow2'
-    print(f'Changed {filename} from .img to {new_filename}...')
+    os.system(f'mv {filename}.img {filename}.qcow2')
+    print(filename + ' has been configured!')
     sleep(3)
     os.system('clear')
     img_resize = input('What would you like to resize the images disk to (Gigabytes): ')
-    os.system(f'qemu-img resize {new_filename} {img_resize}G')
+    os.system(f'qemu-img resize {filename} {img_resize}G')
     print('libguestfs-tools must be installed for some parts of the configuration. Do u want to install it?')
     libguestfs = input('(Y/N): ')
     if libguestfs.lower() in ['y', 'yes']:
@@ -70,7 +69,7 @@ def configure(filename):
         print('libguestfs-tools is a requirement. exiting script...')
         return
     try:
-        subprocess.run(['virt-customize', '-a', new_filename, '--run-command', '"sudo echo > /etc/machine id; sudo ln -sf /etc/machine-id /var/lib/dbus/machine-id"'], check=True)
+        subprocess.run(['virt-customize', '-a', filename, '--run-command', '"sudo echo > /etc/machine id; sudo ln -sf /etc/machine-id /var/lib/dbus/machine-id"'], check=True)
     except subprocess.CalledProcessError as err:
         print(f'An error occured with the machine ID: {err}')
         return
@@ -85,7 +84,7 @@ def configure(filename):
     if root_pwd.lower() in ['y', 'yes']:
         try:
             pwd = input('What would you like the root password to be: ')
-            subprocess.run(['virt-customize', '-a', new_filename, '--root-password', f'password:{pwd}'], check=True)
+            subprocess.run(['virt-customize', '-a', filename, '--root-password', f'password:{pwd}'], check=True)
         except subprocess.CalledProcessError as err:
             print(f'An error occurred with the root password: {err}')
             return
@@ -94,15 +93,15 @@ def configure(filename):
     print('Setting a timezone for the image (ex: Europe/London, America/New_York')
     try:
         timezone = input('What timezone would you like the image to be in: ')
-        subprocess.run(['virt-customize', '-a', new_filename, '--timezone', timezone], check=True)
+        subprocess.run(['virt-customize', '-a', filename, '--timezone', timezone], check=True)
     except subprocess.CalledProcessError as err:
         print(f'An error occured with the timezone: {err}')
         return
     ssh_config = input('Would you like to configure SSH? (Y/N):')
     if ssh_config.lower() in ['y', 'yes']:
         try:
-            subprocess.run(['virt-edit', new_filename, '/etc/sshd_config.d/60_cloudimg-settings.conf'], check=True)
-            subprocess.run(['virt_edit', new_filename, '/etc/ssh/sshd_config.d/sshd_config'], check=True)
+            subprocess.run(['virt-edit', filename, '/etc/sshd_config.d/60_cloudimg-settings.conf'], check=True)
+            subprocess.run(['virt_edit', filename, '/etc/ssh/sshd_config.d/sshd_config'], check=True)
         except subprocess.CalledProcessError as err:
             print(f'An error occurred with the ssh configuration: {err}')
             return
@@ -121,7 +120,7 @@ def configure(filename):
     if finished.lower() in ['y', 'yes']:
         try:
             drive_name = input('What drive does ur VMs disk sit on (example: local-lvm: ')
-            subprocess.run(['qm', 'importdisk', vmid, new_filename, drive_name, '--format', 'qcow2'], check=True)
+            subprocess.run(['qm', 'importdisk', vmid, filename, drive_name, '--format', 'qcow2'], check=True)
         except subprocess.CalledProcessError as err:
             print(f'An error occurred with the drive name: {err}')
             return
