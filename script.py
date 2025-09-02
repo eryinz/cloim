@@ -61,7 +61,7 @@ def configure(filename):
     if libguestfs.lower() in ['y', 'yes']:
         try:
             os.system('clear')
-            subprocess.run(['', 'apt', 'install', 'libguestfs-tools', '-y'], check=True)
+            subprocess.run(['apt', 'install', 'libguestfs-tools', '-y'], check=True)
         except subprocess.CalledProcessError as err:
             print(f'unable to install libguestfs-tools: {err}')
             return
