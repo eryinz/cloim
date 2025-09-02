@@ -61,7 +61,7 @@ def configure(filename):
     if libguestfs.lower() in ['y', 'yes']:
         try:
             os.system('clear')
-            subprocess.run(['sudo', 'apt', 'install', 'libguestfs-tools', '-y'], check=True)
+            subprocess.run(['', 'apt', 'install', 'libguestfs-tools', '-y'], check=True)
         except subprocess.CalledProcessError as err:
             print(f'unable to install libguestfs-tools: {err}')
             return
@@ -69,7 +69,7 @@ def configure(filename):
         print('libguestfs-tools is a requirement. exiting script...')
         return
     try:
-        subprocess.run(['virt-customize', '-a', filename, '--run-command', '"sudo echo > /etc/machine id; sudo ln -sf /etc/machine-id /var/lib/dbus/machine-id"'], check=True)
+        subprocess.run(['virt-customize', '-a', filename, '--run-command', '" echo > /etc/machine id;  ln -sf /etc/machine-id /var/lib/dbus/machine-id"'], check=True)
     except subprocess.CalledProcessError as err:
         print(f'An error occured with the machine ID: {err}')
         return
